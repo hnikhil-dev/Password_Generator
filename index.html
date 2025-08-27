@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Password Generator — Secure & Memorable</title>
+
+  <!-- Content Security Policy: only allow self for scripts/styles, no connections -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self';">
+
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Client-only secure password generator (passphrase & character modes) — entropy & crack time estimates." />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Password Generator</h1>
+      <p class="subtitle">Memorable · Unpredictable · Secure — all client-side</p>
+    </div>
+  </header>
+
+  <main class="container main-grid" id="app">
+    <section class="panel options" aria-labelledby="optionsTitle">
+      <h2 id="optionsTitle">Options</h2>
+
+      <div class="row">
+        <label for="modeSelect">Mode</label>
+        <select id="modeSelect" aria-label="Mode select">
+          <option value="passphrase">Passphrase (memorable)</option>
+          <option value="character">Character (random chars)</option>
+        </select>
+      </div>
+
+      <fieldset class="fieldset">
+        <legend>Presets</legend>
+        <div class="preset-row">
+          <button id="presetEasy" class="btn-preset">Easy</button>
+          <button id="presetMedium" class="btn-preset">Medium</button>
+          <button id="presetHard" class="btn-preset">Hard</button>
+        </div>
+      </fieldset>
+
+      <div id="passphraseOptions">
+        <div class="row">
+          <label for="numWords">Words</label>
+          <input id="numWords" type="number" min="2" max="8" value="4" />
+        </div>
+
+        <div class="row">
+          <label for="separator">Separator</label>
+          <select id="separator">
+            <option value="-">hyphen (-)</option>
+            <option value="_">underscore (_)</option>
+            <option value=".">dot (.)</option>
+            <option value="">none</option>
+            <option value=" ">space</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="personalInput">Seed / Personal hint (optional)</label>
+          <input id="personalInput" type="text" placeholder="e.g., nick or pet name" maxlength="20">
+        </div>
+
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="enableCap" checked> Random capitalisation</label>
+          <label><input type="checkbox" id="enableLeet"> Leet substitutions</label>
+          <label><input type="checkbox" id="enableInsertExtras" checked> Insert digits/symbols</label>
+        </div>
+      </div>
+
+      <div id="characterOptions" style="display:none;">
+        <div class="row">
+          <label for="charLength">Length</label>
+          <input id="charLength" type="number" min="6" max="64" value="16" />
+        </div>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="includeLower" checked> a–z</label>
+          <label><input type="checkbox" id="includeUpper" checked> A–Z</label>
+          <label><input type="checkbox" id="includeDigits" checked> 0–9</label>
+          <label><input type="checkbox" id="includeSymbols" checked> Symbols</label>
+        </div>
+      </div>
+
+      <fieldset class="fieldset">
+        <legend>Attacker model</legend>
+        <div class="row">
+          <label for="guessRate">Guesses / sec</label>
+          <input id="guessRate" type="number" min="1e3" step="1" value="10000000000" />
+        </div>
+        <p class="muted small">Default: 10,000,000,000 guesses/sec (10 billion). Modify to compare attacker strength.</p>
+      </fieldset>
+
+      <div class="action-row">
+        <button id="estimateBtn" class="btn primary">Show Estimate</button>
+        <button id="generateBtn" class="btn primary">Generate</button>
+        <button id="regenBtn" class="btn" disabled>Regenerate</button>
+      </div>
+
+      <details class="notes">
+        <summary>Security notes</summary>
+        <ul>
+          <li>All generation is client-side. No network, no storage.</li>
+          <li>Uses secure RNG: <code>crypto.getRandomValues</code>.</li>
+          <li>Clipboard access is user-initiated only.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="panel preview" aria-labelledby="previewTitle">
+      <h2 id="previewTitle">Preview & Estimates</h2>
+
+      <div class="estimate pre-estimate" id="preEstimate" aria-live="polite">
+        <h3>Pre-generation estimate</h3>
+        <p id="preBits">Bits of entropy: —</p>
+        <p id="preCrack">Estimated time to crack: —</p>
+      </div>
+
+      <div class="generated" id="generated" aria-live="polite">
+        <h3>Generated password</h3>
+        <div class="password-row">
+          <input id="passwordOutput" readonly aria-label="Generated password">
+          <div class="pw-actions">
+            <button id="copyBtn" class="btn" disabled>Copy</button>
+            <button id="downloadBtn" class="btn" disabled>Download</button>
+            <button id="showHideBtn" class="btn" disabled>Show</button>
+          </div>
+        </div>
+
+        <div class="post-estimate" id="postEstimate">
+          <p id="postBits">Bits of entropy: —</p>
+          <p id="postCrack">Estimated time to crack: —</p>
+        </div>
+
+        <div class="history" id="history">
+          <h4>Last actions</h4>
+          <ul id="historyList"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p>Single-file static app (scripts/styles external). Good for portfolio — see README for notes.</p>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
